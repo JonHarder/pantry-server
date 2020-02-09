@@ -31,6 +31,15 @@ import System.IO
 
 type API = "recipes" :> Get '[JSON] [Recipe]
       :<|> "recipes" :> Capture "recipeId" Int :> Get '[JSON] (Maybe Recipe)
+      :<|> "recipes" :> ReqBody '[JSON] Recipe :> Post '[JSON] RecipePostResponse
+
+
+data RecipePostResponse
+  = Sucess { recipeId :: Int }
+  | Failure { error :: String }
+  deriving Generic
+
+instance ToJSON RecipePostResponse
 
 
 data Recipe = Recipe
@@ -40,6 +49,7 @@ data Recipe = Recipe
   } deriving Generic
 
 instance ToJSON Recipe
+instance FromJSON Recipe
 
 
 -- server :: Server API
@@ -52,6 +62,7 @@ instance ToJSON Recipe
 server :: Server API
 server = recipes
     :<|> recipe
+    :<|> recipePost
   where recipes = do
           liftIO $ putStrLn "getting all the recipes"
           return [keyLime]
@@ -60,6 +71,9 @@ server = recipes
             Just keyLime
           else
             Nothing
+        recipePost recipe = do
+          liftIO $ putStrLn $ "saving recipe: " ++ name recipe
+          return $ Sucess 1
         keyLime = Recipe "Key Lime Pie" ["limes"] ["smash the limes"]
 
 
