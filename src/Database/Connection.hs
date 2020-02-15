@@ -6,6 +6,7 @@ module Database.Connection
 
 
 import Data.ByteString.Char8 (pack)
+import Data.Maybe (fromMaybe)
 import Database.PostgreSQL.Simple
 import System.Environment (lookupEnv)
 
@@ -19,13 +20,7 @@ data DbConfig = Config
 
 
 readEnv :: String -> String -> IO String
-readEnv var backup = do
-  mVal <- lookupEnv var
-  case mVal of
-    Just val ->
-      return val
-    Nothing ->
-      return backup
+readEnv var backup = fromMaybe backup <$> lookupEnv var
 
 
 envConfig :: IO DbConfig
