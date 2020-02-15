@@ -28,6 +28,8 @@ dependencies:
 - warp
 - mtl
 - base-compat
+- postgresql-simple
+- bytestring
 
 library:
   source-dirs: src
