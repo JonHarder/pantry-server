@@ -12,16 +12,16 @@ import Prelude.Compat
 
 import Control.Monad.Except
 import Data.Aeson.Types
-import Data.List
 import Data.Maybe (fromMaybe)
+-- import Database.PostgreSQL.Simple
 import GHC.Generics
 import Network.Wai.Handler.Warp
 import Servant
 import Text.Printf (printf)
-import Text.Read (readMaybe)
 import System.Environment
 import System.IO
 
+import Database.Connection
 
 type API = "recipes" :> QueryParam "name" String :> Get '[JSON] [Recipe]
       :<|> "recipes" :> Capture "recipeId" Int :> Get '[JSON] (Maybe Recipe)
@@ -101,15 +101,14 @@ app :: Application
 app = serve api server
 
 
-readEnv :: Read a => String -> a -> IO a
-readEnv var d = do
-  val <- lookupEnv var
-  return $ fromMaybe d (val >>= readMaybe)
-
-
 runApp :: IO ()
 runApp = do
-  port <- readEnv "APP_PORT" 8000
-  printf "running server on http://localhost:%i\n" port
+  -- conn <- connectWithConfig =<< envConfig
+  -- [Only i] <- query_ conn "select 1 + 2"
+  -- let p :: Int -> IO ()
+  --     p = print
+  -- p i
+  port <- read . fromMaybe "8000" <$> lookupEnv "APP_PORT"
+  putStrLn $ "running server on http://localhost:" ++ show port
   hFlush stdout
   run port app
