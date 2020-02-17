@@ -63,6 +63,7 @@ server = getRecipes
     :<|> postRecipe
     :<|> (throwError $ err500 { errBody = "I just wanted to see what would happen"})
 
+
 api :: Proxy API
 api = Proxy
 

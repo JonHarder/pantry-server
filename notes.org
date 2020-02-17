@@ -18,26 +18,27 @@
 * sql
   #+BEGIN_SRC sql
     CREATE TABLE recipe (
-        id serial primary key,
-        name text
+        id serial PRIMARY KEY,
+        name text NOT NULL UNIQUE
     );
     
     CREATE TABLE ingredient_type (
-        id serial primary key,
-        name text
+        id serial PRIMARY KEY,
+        name text NOT NULL UNIQUE
     );
     
     CREATE TABLE ingredient (
         id serial primary key,
         ingredient_type_id integer references ingredient_type(id),
-        amount text,
+        amount text NOT NULL,
         recipe_id integer references recipe(id)
     );
     
     CREATE TABLE instruction (
         id serial primary key,
-        step text,
+        step text NOT NULL,
         recipe_id integer references recipe(id),
-        step_number smallint
+        step_number smallint NOT NULL,
+	UNIQUE (recipe_id, step_number)
     );
   #+END_SRC
