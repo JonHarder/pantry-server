@@ -60,8 +60,8 @@ recipes = [keyLime, bread]
 
 
 getRecipes :: Maybe String -> Handler [Recipe]
-getRecipes mName =
-  case mName of
+getRecipes nameQuery =
+  case nameQuery of
     Just name | name == "pie" -> return [keyLime]
               | name == "bread" -> return [bread]
               | otherwise -> return []

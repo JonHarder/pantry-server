@@ -1,10 +1,10 @@
 # Pantry
 
 
-## Installing
+## Running
 
 ``` shell
-stack install
+docker-compose up
 ```
 
 ## Development

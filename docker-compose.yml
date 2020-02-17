@@ -11,7 +11,7 @@ services:
       - "DB_PASS=secret"
       - "DB_HOST=db"
       - "DB_NAME=pantry"
-      - "APP_PORT=9000"
+      - "APP_PORT=8000"
   db:
     image: 'postgres'
     environment:

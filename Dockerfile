@@ -1,15 +1,15 @@
-FROM fpco/stack-build
+FROM fpco/stack-build as build
+WORKDIR /build
+COPY package.yaml stack.yaml /build/
+RUN cd /build && stack install --system-ghc --dependencies-only
+COPY . /build
+RUN cd /build && stack build
+RUN mkdir /opt/bin && \
+	cp $(cd /build && stack exec which pantry-server) /opt/bin/
 
-COPY package.yaml stack.yaml /app/
-
-WORKDIR /app
-
-RUN stack install --dependencies-only
-
-COPY . /app
-
-RUN stack install
-
-EXPOSE 8000
-
-CMD ["stack", "run", "--allow-different-user"]
+FROM ubuntu:19.04
+COPY --from=build /opt/bin /opt/app
+# ENV APP_PORT 8000
+# EXPOSE $APP_PORT
+RUN apt-get update && apt-get install -y libpq-dev
+CMD ["/opt/app/pantry-server"]
