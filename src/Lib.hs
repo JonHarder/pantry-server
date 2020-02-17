@@ -9,6 +9,7 @@ module Lib (
 
 import Prelude ()
 import Prelude.Compat
+
 import Control.Monad.Except
 import Data.Aeson.Types
 import Data.Maybe (fromMaybe)
@@ -20,6 +21,7 @@ import System.Environment
 import System.IO
 
 import Database.Connection
+import Model
 
 type API = "recipes" :> QueryParam "name" String :> Get '[JSON] [Recipe]
       :<|> "recipes" :> Capture "recipeId" Int :> Get '[JSON] (Maybe Recipe)
@@ -34,16 +36,6 @@ data RecipePostResponse
   deriving Generic
 
 instance ToJSON RecipePostResponse
-
-
-data Recipe = Recipe
-  { name :: String
-  , ingredients :: [String]
-  , instructions :: [String]
-  } deriving Generic
-
-instance ToJSON Recipe
-instance FromJSON Recipe
 
 
 keyLime :: Recipe
@@ -69,11 +61,9 @@ getRecipes nameQuery =
 
         
 getRecipe :: Int -> Handler (Maybe Recipe)
-getRecipe recipeId = return $
-  if recipeId == 2 then
-    Just keyLime
-  else
-    Nothing
+getRecipe recipeId = do
+  conn <- liftIO getConnection
+  liftIO $ getRecipeById conn recipeId
 
 
 postRecipe :: Recipe -> Handler RecipePostResponse
