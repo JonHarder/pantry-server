@@ -111,7 +111,7 @@ app = serve api server
 
 runApp :: IO ()
 runApp = do
-  port <- read . fromMaybe "8000" <$> lookupEnv "APP_PORT"
+  port <- read . fromMaybe "80" <$> lookupEnv "APP_PORT"
   putStrLn $ "running server on http://localhost:" ++ show port
   hFlush stdout
   run port app

@@ -13,6 +13,7 @@ The following environment variables are read by the application to configure
 its behavior
 
 - APP_PORT (default=80): The port the web server will listen to incomming requests on
+- DB_URL (default=postgres://postgres@localhost:5432/postgres): the connection url that app will use to connect to the database
 
 ## Development
 
