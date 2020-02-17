@@ -9,15 +9,13 @@ module Lib (
 
 import Prelude ()
 import Prelude.Compat
-
 import Control.Monad.Except
 import Data.Aeson.Types
 import Data.Maybe (fromMaybe)
--- import Database.PostgreSQL.Simple
+import Database.PostgreSQL.Simple
 import GHC.Generics
 import Network.Wai.Handler.Warp
 import Servant
-import Text.Printf (printf)
 import System.Environment
 import System.IO
 
@@ -26,6 +24,7 @@ import Database.Connection
 type API = "recipes" :> QueryParam "name" String :> Get '[JSON] [Recipe]
       :<|> "recipes" :> Capture "recipeId" Int :> Get '[JSON] (Maybe Recipe)
       :<|> "recipes" :> ReqBody '[JSON] Recipe :> Post '[JSON] RecipePostResponse
+      :<|> "db"      :> Get '[JSON] [String]
       :<|> "err"     :> Get '[JSON] ()
 
 
@@ -87,10 +86,19 @@ postRecipe r = do
       RecipePostSuccess 8
 
 
+dbTest :: Handler [String]
+dbTest = do
+  let q = "select name from recipe"
+  conn <- liftIO getConnection
+  xs <- liftIO $ query_ conn q
+  forM xs $ \(Only x) -> return x
+
+
 server :: Server API
 server = getRecipes
     :<|> getRecipe
     :<|> postRecipe
+    :<|> dbTest
     :<|> (throwError $ err500 { errBody = "I just wanted to see what would happen"})
 
 api :: Proxy API
@@ -103,11 +111,6 @@ app = serve api server
 
 runApp :: IO ()
 runApp = do
-  -- conn <- connectWithConfig =<< envConfig
-  -- [Only i] <- query_ conn "select 1 + 2"
-  -- let p :: Int -> IO ()
-  --     p = print
-  -- p i
   port <- read . fromMaybe "8000" <$> lookupEnv "APP_PORT"
   putStrLn $ "running server on http://localhost:" ++ show port
   hFlush stdout
