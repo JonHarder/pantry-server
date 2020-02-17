@@ -1,0 +1,43 @@
+* schema
+** recipe
+   - id
+   - name
+** ingredient
+   - id
+   - ingredient_type_id
+   - amount
+   - recipe_id
+** ingredient_type
+   - id
+   - name
+** instruction
+   - id
+   - step
+   - step_number
+   - recipe_id
+* sql
+  #+BEGIN_SRC sql
+    CREATE TABLE recipe (
+        id serial primary key,
+        name text
+    );
+    
+    CREATE TABLE ingredient_type (
+        id serial primary key,
+        name text
+    );
+    
+    CREATE TABLE ingredient (
+        id serial primary key,
+        ingredient_type_id integer references ingredient_type(id),
+        amount text,
+        recipe_id integer references recipe(id)
+    );
+    
+    CREATE TABLE instruction (
+        id serial primary key,
+        step text,
+        recipe_id integer references recipe(id),
+        step_number smallint
+    );
+  #+END_SRC
