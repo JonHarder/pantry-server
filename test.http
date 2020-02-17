@@ -1,1 +1,8 @@
+# get all the recipes
+GET http://localhost:8000/recipes
+
+# get recipes by name
+GET http://localhost:8000/recipes?name=bread
+
+# get a recipe
 GET http://localhost:8000/recipes/1

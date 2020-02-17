@@ -26,7 +26,6 @@ import Model
 type API = "recipes" :> QueryParam "name" String :> Get '[JSON] [Recipe]
       :<|> "recipes" :> Capture "recipeId" Int :> Get '[JSON] (Maybe Recipe)
       :<|> "recipes" :> ReqBody '[JSON] Recipe :> Post '[JSON] RecipePostResponse
-      :<|> "db"      :> Get '[JSON] [String]
       :<|> "err"     :> Get '[JSON] ()
 
 
@@ -38,26 +37,14 @@ data RecipePostResponse
 instance ToJSON RecipePostResponse
 
 
-keyLime :: Recipe
-keyLime = Recipe "Key Lime Pie" ["limes"] ["smash the limes"]
-
-
-bread :: Recipe
-bread = Recipe "Sourdough Bread" ["flour", "water", "salt"] ["it's complicated...."]
-
-
-recipes :: [Recipe]
-recipes = [keyLime, bread]
-
-
 getRecipes :: Maybe String -> Handler [Recipe]
-getRecipes nameQuery =
+getRecipes nameQuery = do
+  conn <- liftIO getConnection
   case nameQuery of
-    Just name | name == "pie" -> return [keyLime]
-              | name == "bread" -> return [bread]
-              | otherwise -> return []
+    Just name ->
+      liftIO $ findRecipesByName  conn name
     Nothing ->
-      return recipes
+      liftIO $ getAllRecipes conn
 
         
 getRecipe :: Int -> Handler (Maybe Recipe)
@@ -67,28 +54,13 @@ getRecipe recipeId = do
 
 
 postRecipe :: Recipe -> Handler RecipePostResponse
-postRecipe r = do
-  liftIO $ putStrLn $ "saving recipe: " ++ name r
-  return $
-    if name r == "foo" then
-      RecipePostFailure "that name doesn't make any sense"
-    else
-      RecipePostSuccess 8
-
-
-dbTest :: Handler [String]
-dbTest = do
-  let q = "select name from recipe"
-  conn <- liftIO getConnection
-  xs <- liftIO $ query_ conn q
-  forM xs $ \(Only x) -> return x
+postRecipe r = undefined
 
 
 server :: Server API
 server = getRecipes
     :<|> getRecipe
     :<|> postRecipe
-    :<|> dbTest
     :<|> (throwError $ err500 { errBody = "I just wanted to see what would happen"})
 
 api :: Proxy API
