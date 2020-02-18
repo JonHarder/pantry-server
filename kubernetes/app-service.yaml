@@ -8,6 +8,6 @@ spec:
     role: api
   ports:
     - protocol: TCP
-      port: 8000
+      port: 80
       targetPort: 80
   type: LoadBalancer
