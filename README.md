@@ -22,3 +22,11 @@ starting the compiler in file watcher mode:
 ``` shell
 stack test --fast --haddock-deps --file-watch
 ```
+
+## Todo
+
+* finish kubernetes deployment architecture
+  * db in pod? (use StatefulSet)
+  * OR hosted db?
+* tag based search
+* front end

@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pantry-server-deployment
+  labels:
+    app: pantry
+    role: deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pantry
+      role: api
+  template:
+    metadata:
+      labels:
+        app: pantry
+        role: api
+    spec:
+      containers:
+        - name: pantry-app-api
+          image: jharderdocker/pantry-server
+          env:
+            - name: APP_PORT
+              value: "80"
+            - name: DB_URL
+              value: "postgres://pantry:secret@db/pantry"
