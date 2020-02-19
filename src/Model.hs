@@ -12,6 +12,7 @@ import GHC.Generics
 
 data Recipe = Recipe
   { name :: String
+  , recipeId :: Int
   , ingredients :: [String]
   , instructions :: [String]
   , tags :: [String]
@@ -48,6 +49,7 @@ assembleRecipes conn recipeFragments =
     tags <- getTags conn rId
     return $ Recipe
       { name = rName
+      , recipeId = rId
       , instructions = instructions
       , ingredients = ingredients
       , tags = tags
