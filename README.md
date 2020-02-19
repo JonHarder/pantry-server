@@ -26,7 +26,9 @@ stack test --fast --haddock-deps --file-watch
 ## Todo
 
 * finish kubernetes deployment architecture
-  * db in pod? (use StatefulSet)
-  * OR hosted db?
+  * statefulset
+  * persistent volume (claim)
+  * https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/
+  * update db-stateful-set.yaml to use volume defined by pv
 * tag based search
 * front end
