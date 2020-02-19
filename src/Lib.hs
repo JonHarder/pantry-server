@@ -23,10 +23,10 @@ import System.IO
 import Database.Connection
 import Model
 
-type API = "recipes" :> QueryParam "name" String :> Get '[JSON] [Recipe]
-      :<|> "recipes" :> Capture "recipeId" Int :> Get '[JSON] (Maybe Recipe)
-      :<|> "recipes" :> ReqBody '[JSON] Recipe :> Post '[JSON] RecipePostResponse
-      :<|> "err"     :> Get '[JSON] ()
+type API = "recipes" :> QueryParam "search" String :> Get  '[JSON] [Recipe]
+      :<|> "recipes" :> Capture "recipeId" Int     :> Get  '[JSON] (Maybe Recipe)
+      :<|> "recipes" :> ReqBody '[JSON] Recipe     :> Post '[JSON] RecipePostResponse
+      :<|> "err"                                   :> Get  '[JSON] ()
 
 
 data RecipePostResponse
@@ -38,11 +38,11 @@ instance ToJSON RecipePostResponse
 
 
 getRecipes :: Maybe String -> Handler [Recipe]
-getRecipes nameQuery = do
+getRecipes searchQuery = do
   conn <- liftIO getConnection
-  case nameQuery of
-    Just name ->
-      liftIO $ findRecipesByName  conn name
+  case searchQuery of
+    Just search ->
+      liftIO $ findRecipesSearch conn search
     Nothing ->
       liftIO $ getAllRecipes conn
 
