@@ -13,22 +13,15 @@ The following environment variables are read by the application to configure
 its behavior
 
 - APP_PORT (default=80): The port the web server will listen to incomming requests on
-- DB_URL (default=postgres://postgres@localhost:5432/postgres): the connection url that app will use to connect to the database
-
-## Development
-
-starting the compiler in file watcher mode:
-
-``` shell
-stack test --fast --haddock-deps --file-watch
-```
+- PANTRY_DB_SERVICE_SERVICE_HOST (default="localhost"): the host name of the database
 
 ## Todo
 
 * finish kubernetes deployment architecture
   * statefulset
-  * persistent volume (claim)
+  * storage class for gce-pd
+  * ~~persistent volume~~
+  * ~~persistent volume claim~~
   * https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/
-  * update db-stateful-set.yaml to use volume defined by pv
-* tag based search
+* ~~tag based search~~
 * front end
