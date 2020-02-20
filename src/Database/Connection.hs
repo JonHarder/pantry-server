@@ -8,7 +8,13 @@ import System.Environment (lookupEnv)
 
 getConnection :: IO Connection
 getConnection = do
-  dbUrl <- lookupEnv "DB_URL"
-  case dbUrl of
-    Just url -> connectPostgreSQL $ pack url
+  dbHost <- lookupEnv "PANTRY_DB_SERVICE_SERVICE_HOST"
+  case dbHost of
+    Just host -> connect config
+      where config = defaultConnectInfo
+              { connectHost =     host
+              , connectUser =     "pantry"
+              , connectPassword = "secret"
+              , connectDatabase = "pantry"
+              }
     Nothing -> connect defaultConnectInfo

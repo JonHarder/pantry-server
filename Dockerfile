@@ -9,7 +9,8 @@ RUN mkdir /opt/bin && \
 
 FROM ubuntu:19.04
 COPY --from=build /opt/bin /opt/app
-# ENV APP_PORT 8000
+ENV APP_PORT 80
+# ENV DB_URL postgres://pantry:secret@192.168.0.8:5432/pantry
 # EXPOSE $APP_PORT
 RUN apt-get update && apt-get install -y libpq-dev
 CMD ["/opt/app/pantry-server"]

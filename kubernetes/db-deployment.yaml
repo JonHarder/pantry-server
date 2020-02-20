@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pantry-db-deployment
+  labels:
+    app: pantry
+    role: deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pantry
+      role: db
+  template:
+    metadata:
+      labels:
+        app: pantry
+        role: db
+    spec:
+      volumes:
+        - name: db-pv-data
+          persistentVolumeClaim:
+            claimName: db-pv-claim
+      containers:
+        - name: pantry-app-db
+          image: postgres
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: db-pv-data
+          env:
+            - name: POSTGRES_PASSWORD
+              value: "secret"
+            - name: POSTGRES_USER
+              value: "pantry"
+            - name: POSTGRES_DB
+              value: "pantry"
+          
+      

@@ -7,7 +7,7 @@ services:
     depends_on:
       - db
     environment:
-      - "DB_URL=postgres://pantry:secret@db/pantry"
+      - "PANTRY_DB_SERVICE_SERVICE_HOST=db"
       - "APP_PORT=80"
   db:
     image: 'postgres'

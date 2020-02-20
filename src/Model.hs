@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Model (Recipe, findRecipesSearch, getAllRecipes, getRecipeById) where
 
@@ -8,6 +9,7 @@ import Data.Aeson.Types
 import Data.List (nub)
 import Data.Maybe (listToMaybe)
 import Database.PostgreSQL.Simple
+import Database.PostgreSQL.Simple.SqlQQ
 import GHC.Generics
 
 data Recipe = Recipe
@@ -24,20 +26,33 @@ instance FromJSON Recipe
 
 getInstructions :: Connection -> Int -> IO [String]
 getInstructions conn recipeId = do
-  instructionResults <- query conn "SELECT step FROM instruction WHERE recipe_id = ? ORDER BY step_number ASC" $ Only recipeId :: IO [Only String]
+  instructionResults <- query conn [sql|
+      SELECT step
+      FROM instruction
+      WHERE recipe_id = ?
+      ORDER BY step_number ASC
+      |] $ Only recipeId :: IO [Only String]
   return $ map (\(Only instruction) -> instruction) instructionResults
 
 
 getIngredients :: Connection -> Int -> IO [String]
 getIngredients conn recipeId = do
-  ingredientResults <- query conn
-    "SELECT amount, name FROM ingredient i INNER JOIN ingredient_type it ON i.ingredient_type_id = it.id WHERE recipe_id = ?" $ Only recipeId
+  ingredientResults <- query conn [sql|
+    SELECT amount, name
+    FROM ingredient i
+    INNER JOIN ingredient_type it ON i.ingredient_type_id = it.id
+    WHERE recipe_id = ?
+    |] $ Only recipeId
   return $ map (\(ingAmount, ingName) -> ingAmount ++ " of " ++ ingName) ingredientResults
 
 
 getTags :: Connection -> Int -> IO [String]
 getTags conn recipeId = do
-  tagResults <- query conn "select label from recipe_tag where recipe_id = ?" $ Only recipeId
+  tagResults <- query conn [sql|
+      SELECT label
+      FROM recipe_tag
+      WHERE recipe_id = ?
+      |] $ Only recipeId
   return $ map (\(Only label) -> label) tagResults
 
 
@@ -58,26 +73,39 @@ assembleRecipes conn recipeFragments =
 
 getRecipeById :: Connection -> Int -> IO (Maybe Recipe)
 getRecipeById conn recipeId = do
-  results <- query conn "SELECT id, name FROM recipe WHERE id = ?" $ Only recipeId :: IO [(Int, String)]
+  results <- query conn [sql|
+      SELECT id, name
+      FROM recipe
+      WHERE id = ?
+      |] (Only recipeId)
   recipes <- assembleRecipes conn results
   return $ listToMaybe recipes
 
 
 getAllRecipes :: Connection -> IO [Recipe]
 getAllRecipes conn = do
-  results <- query_ conn "SELECT id, name FROM recipe" :: IO [(Int, String)]
+  results <- query_ conn [sql|SELECT id, name FROM recipe|]
   assembleRecipes conn results
 
 
 findRecipesByName :: Connection -> String -> IO [Recipe]
 findRecipesByName conn recipeName = do
-  results <- query conn "select id, name from recipe where name like ?" $ Only ("%" ++ recipeName ++ "%") :: IO [(Int, String)]
+  results <- query conn [sql|
+      SELECT id, name
+      FROM recipe
+      WHERE name LIKE ?
+      |] $ Only ("%" ++ recipeName ++ "%")
   assembleRecipes conn results
 
 
 findRecipesByTag :: Connection -> String -> IO [Recipe]
 findRecipesByTag conn tag = do
-  results <- query conn "select r.id, name from recipe_tag t inner join recipe r on t.recipe_id = r.id where label = ?" $ Only tag
+  results <- query conn [sql|
+      SELECT r.id, name
+      FROM recipe_tag t
+      INNER JOIN recipe r ON t.recipe_id = r.id
+      WHERE label = ?
+      |] (Only tag)
   assembleRecipes conn results
 
 
