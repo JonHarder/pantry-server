@@ -1,23 +1,32 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: pantry-db-stateful-set
+  name: pantry-db-deployment
+  labels:
+    app: pantry
+    role: deployment
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: pantry
       role: db
-  serviceName: "postgres"
-  replicas: 1
   template:
     metadata:
-      app: pantry
-      role: db
+      labels:
+        app: pantry
+        role: db
     spec:
-      terminationGracePeriodSeconds: 10
+      volumes:
+        - name: db-pv-data
+          persistentVolumeClaim:
+            claimName: db-pv-claim
       containers:
         - name: pantry-app-db
           image: postgres
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: db-pv-data
           env:
             - name: POSTGRES_PASSWORD
               value: "secret"
@@ -25,14 +34,5 @@ spec:
               value: "pantry"
             - name: POSTGRES_DB
               value: "pantry"
-  volumeClaimTemplates:
-    - metadata:
-        name: pantry-db-stateful-set
-      spec:
-        accessModes: [ "ReadWriteOnce" ]
-        storageClassName: "my-storage-class"
-        resources:
-          requests:
-            storage: 1Gi
           
       

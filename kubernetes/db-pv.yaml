@@ -3,12 +3,12 @@ kind: PersistentVolume
 metadata:
   name: db-pv-volume
   labels:
-    type: gce-pv
+    type: local # gce-pv
 spec:
-   storageClassName: standard
+   storageClassName: manual # standard
    capacity:
      storage: 1Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/var/lib/postgresql/data"
+   accessModes:
+     - ReadWriteOnce
+   hostPath:
+     path: "/var/lib/postgresql/data"
