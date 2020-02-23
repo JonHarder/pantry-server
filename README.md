@@ -15,6 +15,13 @@ its behavior
 - APP_PORT (default=80): The port the web server will listen to incomming requests on
 - PANTRY_DB_SERVICE_SERVICE_HOST (default="localhost"): the host name of the database
 
+#### Terraform Config
+You will need to set two environmental variables on your machine to run the terraform: 
+- GOOGLE_APPLICATION_CREDENTIALS
+- GOOGLE_CLOUD_KEYFILE_JSON
+
+These both should point to your JSON file with your google cloud creds. 
+
 ## Todo
 
 * finish kubernetes deployment architecture
