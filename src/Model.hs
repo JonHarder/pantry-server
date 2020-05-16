@@ -25,24 +25,24 @@ instance FromJSON Recipe
 
 
 getInstructions :: Connection -> Int -> IO [String]
-getInstructions conn recipeId = do
+getInstructions conn rId = do
   instructionResults <- query conn [sql|
       SELECT step
       FROM instruction
       WHERE recipe_id = ?
       ORDER BY step_number ASC
-      |] $ Only recipeId :: IO [Only String]
+      |] $ Only rId :: IO [Only String]
   return $ map (\(Only instruction) -> instruction) instructionResults
 
 
 getIngredients :: Connection -> Int -> IO [String]
-getIngredients conn recipeId = do
+getIngredients conn rId = do
   ingredientResults <- query conn [sql|
     SELECT amount, name
     FROM ingredient i
     INNER JOIN ingredient_type it ON i.ingredient_type_id = it.id
     WHERE recipe_id = ?
-    |] $ Only recipeId
+    |] $ Only rId
   return $ map (\(ingAmount, ingName) -> ingAmount ++ " of " ++ ingName) ingredientResults
 
 

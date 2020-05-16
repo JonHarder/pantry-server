@@ -6,3 +6,6 @@ GET http://localhost:8000/recipes?search=bread
 
 # get a recipe
 GET http://localhost:8000/recipes/1
+
+# get a missing recipe
+GET http://localhost:8000/recipes?search=foo
