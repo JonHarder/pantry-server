@@ -54,7 +54,7 @@ getRecipe rId = do
 
 
 postRecipe :: Recipe -> Handler RecipePostResponse
-postRecipe r = undefined
+postRecipe _ = undefined
 
 
 server :: Server API
