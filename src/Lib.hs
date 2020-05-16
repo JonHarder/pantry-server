@@ -48,9 +48,9 @@ getRecipes searchQuery = do
 
         
 getRecipe :: Int -> Handler (Maybe Recipe)
-getRecipe recipeId = do
+getRecipe rId = do
   conn <- liftIO getConnection
-  liftIO $ getRecipeById conn recipeId
+  liftIO $ getRecipeById conn rId
 
 
 postRecipe :: Recipe -> Handler RecipePostResponse
